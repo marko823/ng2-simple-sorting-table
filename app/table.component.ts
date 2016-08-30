@@ -1,8 +1,8 @@
-import {Component} from '@angular/core';
+import {Component, ViewChildren} from "@angular/core";
+import {QueryList} from "@angular/core/src/linker/query_list";
 import {EMPLOYEES} from "./data";
-import {SORT_BUTTONS_COMPONENTS} from "./sort-buttons-components";
-import {SORT_BUTTONS_PROVIDERS} from "./sort-buttons-providers";
 import {SortingService} from "./sorting.service";
+import {SortButtonsComponent} from "./sort-buttons.component";
 
 @Component({
     selector: 'simple-table',
@@ -14,7 +14,6 @@ import {SortingService} from "./sorting.service";
         <th>Full name
             <sort-buttons
                         [sortProperty]="'fullName'"
-                        [initialOrderAsc]="false"
                         (ascendingOrder)="ascSort(data, $event)"
                         (descendingOrder)="descSort(data, $event)">
             </sort-buttons>
@@ -22,7 +21,6 @@ import {SortingService} from "./sorting.service";
         <th>Email
             <sort-buttons
                         [sortProperty]="'email'"
-                        [initialOrderAsc]="false"
                         (ascendingOrder)="ascSort(data, $event)"
                         (descendingOrder)="descSort(data, $event)">
             </sort-buttons>
@@ -30,7 +28,6 @@ import {SortingService} from "./sorting.service";
         <th>Date of Birth
             <sort-buttons
                         [sortProperty]="'birthDate'"
-                        [initialOrderAsc]="false"
                         (ascendingOrder)="ascSort(data, $event)"
                         (descendingOrder)="descSort(data, $event)">
             </sort-buttons>
@@ -48,22 +45,36 @@ import {SortingService} from "./sorting.service";
 
     `,
     providers: [SortingService],
-    directives: [SORT_BUTTONS_COMPONENTS]
+    directives: [SortButtonsComponent]
 })
 export class TableComponent {
 
     data:Array<any>;
 
+    @ViewChildren(SortButtonsComponent) items:QueryList<SortButtonsComponent>;
+
     constructor(private sortingService:SortingService) {
         this.data = EMPLOYEES;
     }
 
-    ascSort(data:Array<any>, event:any) {
-        this.data = this.sortingService.sort(data, event, "asc");
+    ascSort(data:Array<any>, sortProperty:any) {
+        this.data = this.sortingService.sort(data, sortProperty, "asc");
+        this.changeChildrenState(sortProperty);
     }
 
-    descSort(data:Array<any>, event:any) {
-        this.data = this.sortingService.sort(data, event, "desc");
+    descSort(data:Array<any>, sortProperty:any) {
+        this.data = this.sortingService.sort(data, sortProperty, "desc");
+        this.changeChildrenState(sortProperty);
+    }
+
+    changeChildrenState(sortProperty:any) {
+
+        this.items.forEach((item) => {
+            if (!(item.sortProperty === sortProperty)) {
+                item.state.changeState(false, false, true);
+            }
+        })
+
     }
 
 }

@@ -1,28 +1,25 @@
-import {Component, Input, Output, EventEmitter, OnInit} from "@angular/core";
+import {Component, Input, Output, EventEmitter} from "@angular/core";
+import {SortButtonsState} from "./sort-buttons-state.service";
 
 
 @Component({
     moduleId: module.id,
     selector: 'sort-buttons',
     template: `
-        <a *ngIf="descOrder" (click)="ascendingOrderClicked()">
+        <a *ngIf="state.asc" (click)="sortDescClicked()" [class.inactive-sort]="state.inactive">
             <span class="glyphicon glyphicon-sort-by-attributes"></span>
         </a>
-        <a *ngIf="ascOrder" (click)="descendingOrderClicked()">
+        <a *ngIf="!state.asc" (click)="sortAscClicked()" [class.inactive-sort]="state.inactive">
             <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
         </a>
     `
 })
-export class SortButtonsComponent implements OnInit {
+export class SortButtonsComponent {
 
-    ascOrder:boolean;
-    descOrder:boolean;
+    state:SortButtonsState;
 
     @Input()
     sortProperty:string;
-
-    @Input()
-    initialOrderAsc:boolean;
 
     @Output()
     ascendingOrder = new EventEmitter();
@@ -30,20 +27,18 @@ export class SortButtonsComponent implements OnInit {
     @Output()
     descendingOrder = new EventEmitter();
 
-    ngOnInit() {
-        this.initialOrderAsc ? this.ascendingOrderClicked() : this.descendingOrderClicked();
+    constructor() {
+        this.state = new SortButtonsState(false, false, true);
     }
 
-    ascendingOrderClicked() {
+    sortAscClicked() {
         this.ascendingOrder.emit(this.sortProperty);
-        this.ascOrder = true;
-        this.descOrder = !this.ascOrder;
+        this.state.changeState(true, false, false);
     }
 
-    descendingOrderClicked() {
+    sortDescClicked() {
         this.descendingOrder.emit(this.sortProperty);
-        this.descOrder = true;
-        this.ascOrder = !this.descendingOrder;
+        this.state.changeState(false, true, false);
     }
 
 }
