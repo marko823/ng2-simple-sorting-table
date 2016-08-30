@@ -32,6 +32,13 @@ import {SortButtonsComponent} from "./sort-buttons.component";
                         (descendingOrder)="descSort(data, $event)">
             </sort-buttons>
         </th>
+        <th>Employee number
+            <sort-buttons
+                        [sortProperty]="'empNo'"
+                        (ascendingOrder)="ascSort(data, $event)"
+                        (descendingOrder)="descSort(data, $event)">
+            </sort-buttons>
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -39,6 +46,7 @@ import {SortButtonsComponent} from "./sort-buttons.component";
         <td>{{employee.fullName}}</td>
         <td>{{employee.email}}</td>
         <td>{{employee.birthDate | date}}</td>
+        <td>{{employee.empNo}}</td>
       </tr>
     </tbody>
   </table>
